@@ -1,6 +1,11 @@
 package mockito.assignment1;
 
-import org.junit.Test;
+import mockito.TestDataProvider;
+import mockito.Warehouse;
+import mockito.WarehouseImpl;
+import org.junit.Before;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
 
 import java.util.List;
 
@@ -10,6 +15,8 @@ import static org.mockito.Mockito.when;
 
 public class OrderTest {
 
+
+
     @Test
     /**
      * Assignment 1a
@@ -18,7 +25,14 @@ public class OrderTest {
      * 		- verify that the order is filled
      */
     public void orderIsFilledWhenWarehouseCanProvide() {
-        fail("Not implemented");
+        // ARRANGE
+        Warehouse normalWarehouse = TestDataProvider.getDefaultTestWarehouse();     // Oppretter et varehus
+        Order fillableOrder = TestDataProvider.getFillableOrder(normalWarehouse);   // Oppretter en ordre det er kapasitet for å oppfyller i varehuset
+        assertFalse(fillableOrder.isFilled());
+        // ACT
+        fillableOrder.fill(normalWarehouse);
+        // ASSERT
+        assertTrue(fillableOrder.isFilled());
     }
 
     @Test
@@ -29,7 +43,15 @@ public class OrderTest {
      * 		- verify that the inventory is updated accordingly
      */
     public void inventoryIsUpdatedWhenWarehouseFillsOrder() {
-        fail("Not implemented");
+        Warehouse normalWarehouse = TestDataProvider.getDefaultTestWarehouse();
+        Order fillableOrder = TestDataProvider.getFillableOrder(normalWarehouse);
+        int initialInventory = normalWarehouse.getInventory(fillableOrder.getProductName());
+        assertFalse(fillableOrder.isFilled());
+        // ACT
+        fillableOrder.fill(normalWarehouse);
+        //ASSERT
+        assertTrue(initialInventory == normalWarehouse.getInventory(fillableOrder.getProductName()) + fillableOrder.getQuantity());
+
     }
 
     @Test
@@ -40,7 +62,13 @@ public class OrderTest {
      * 		- verify that the order is not filled
      */
     public void orderIsNotFilledWhenWarehouseFailsToProvide() {
-        fail("Not implemented");
+        Warehouse normalWarehouse = TestDataProvider.getDefaultTestWarehouse();
+        Order notFillableOrder = TestDataProvider.getNonFillableOrder(normalWarehouse);
+        assertFalse(notFillableOrder.isFilled());
+        // ACT
+        notFillableOrder.fill(normalWarehouse);
+        // ASSERT
+        assertFalse(notFillableOrder.isFilled());
     }
 
     @Test
@@ -51,7 +79,13 @@ public class OrderTest {
      * 		- verify that the warehouse inventory has not changed
      */
     public void inventoryIsUnchangedWhenOrderIsNotFilled() {
-        fail("Not implemented");
+        Warehouse normalWarehouse = TestDataProvider.getDefaultTestWarehouse();
+        Order notFillableOrder = TestDataProvider.getNonFillableOrder(normalWarehouse);
+        int initialInventory = normalWarehouse.getInventory(notFillableOrder.getProductName());
+        // ACT
+        notFillableOrder.fill(normalWarehouse);
+        // ASSERT
+        assertTrue(initialInventory == normalWarehouse.getInventory(notFillableOrder.getProductName()));
     }
 
     @Test
@@ -63,7 +97,7 @@ public class OrderTest {
      * Also make sure the order status is filled.
      */
     public void warehouseShouldCheckInventoryAndUpdateQuantityWhenNeeded() {
-        fail("Not implemented");
+
     }
 
     @Test

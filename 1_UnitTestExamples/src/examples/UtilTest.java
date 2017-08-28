@@ -76,17 +76,32 @@ public class UtilTest {
     }
 
     @Test
-    public void testHandleNumbersNormal() {
+    public void testHandleSumNormal() {
         fail("Not implemented yet");
     }
 
     @Test
-    public void testHandleNumbersEmptyNumbersArray() {
-        fail("Not implemented yet");
+    public void testSumEmptyNumbersArray() {
+        int[] ints = new int[0];
+        int result = util.sum(ints);
+        assertTrue(result==0);
     }
 
+    @Test (expected = IllegalArgumentException.class)
+    public void testSumNullNumbersArray() {
+        int[] ints = null;
+        int result = util.sum(ints);
+        assertTrue(result==0);
+    }
+
+
     @Test
-    public void testHandleNumbersNullNumbersArray() {
-        fail("Not implemented yet");
+    public void testAvgPosAndMinNumbers() throws Exception {
+        int[] ints = new int[4];
+        ints[0] = -1;
+        ints[1] = 2;
+        ints[2] = 3;
+        ints[3] = 4;
+        assertTrue(util.avg(ints)==2);
     }
 }
