@@ -4,6 +4,7 @@ import mockito.TestDataProvider;
 import mockito.Warehouse;
 import mockito.WarehouseImpl;
 import org.junit.Before;
+import org.mockito.Mockito;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -97,7 +98,12 @@ public class OrderTest {
      * Also make sure the order status is filled.
      */
     public void warehouseShouldCheckInventoryAndUpdateQuantityWhenNeeded() {
+        Warehouse normalWarehouse = Mockito.mock(Warehouse.class);
+        Order fillableOrder = TestDataProvider.getFillableOrder(normalWarehouse);   // Oppretter en ordre det er kapasitet for å oppfyller i varehuset
+        fillableOrder.fill(normalWarehouse);
 
+        //Mockito.verify(normalWarehouse).hasInventory("Talisker", 50);
+        //Mockito.verify(normalWarehouse).remove("Talisker", 50);
     }
 
     @Test
