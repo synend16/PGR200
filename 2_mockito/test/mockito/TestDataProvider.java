@@ -1,6 +1,7 @@
 package mockito;
 
 import mockito.assignment1.Order;
+import mockito.assignment2.OrderRevisitet;
 
 import java.util.Set;
 
@@ -48,4 +49,25 @@ public class TestDataProvider {
     public static Order getDefaultOrder(){
         return new Order(TALISKER, TALISKER_INVENTORY);
     }
+
+    public static OrderRevisitet getDefaultOrderRevisited(){
+        return new OrderRevisitet(TALISKER, TALISKER_INVENTORY);
+    }
+
+    public static OrderRevisitet getFillableOrderRevisited(Warehouse warehouse){
+        String productName = getOneProductName(warehouse);
+        if (productName!=null){
+            return new OrderRevisitet(productName, warehouse.getInventory(productName));
+        }
+        throw new RuntimeException("Unable to provide fillable orderWithMailService.");
+    }
+
+    public static OrderRevisitet getNonFillableOrderRevisited(Warehouse warehouse){
+        String productname = getOneProductName(warehouse);
+        if (productname!=null){
+            return new OrderRevisitet(productname, warehouse.getInventory(productname) + 1);
+        }
+        return new OrderRevisitet("dummyProductName", 1);
+    }
+
 }

@@ -1,10 +1,12 @@
 package mockito.assignment2;
 
+import mockito.TestDataProvider;
 import mockito.Warehouse;
 import mockito.assignment1.Order;
 import mockito.assignment2.OrderRevisitet;
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.anyInt;
@@ -19,7 +21,15 @@ public class OrderRevisitetTest {
      * Assert that a mail is sent when the order is not filled.
      */
     public void mailSentIfOrderIsNotFilled() {
-        fail("Not implemented");
+        // ARRANGE
+        Warehouse normalWarehouse = TestDataProvider.getDefaultTestWarehouse();
+        OrderRevisitet nonFillableOrder = TestDataProvider.getNonFillableOrderRevisited(normalWarehouse);
+        MailServiceStub mailer = new MailServiceStub();
+        nonFillableOrder.setMailService(mailer);
+        //ACT
+        nonFillableOrder.fill(normalWarehouse);
+        //ASSERT
+        assertEquals(1, mailer.numberSent());
     }
 
     @Test
@@ -29,7 +39,15 @@ public class OrderRevisitetTest {
      * Assert that a mail is NOT sent when the order is filled.
      */
     public void mailNotSentWhenOrderIsFilled() {
-        fail("Not implemented");
+        //ARRANGE
+        Warehouse normalWarehouse = TestDataProvider.getDefaultTestWarehouse();
+        OrderRevisitet fillableOrder = TestDataProvider.getFillableOrderRevisited(normalWarehouse);
+        MailServiceStub mailer = new MailServiceStub();
+        fillableOrder.setMailService(mailer);
+        //ACT
+        fillableOrder.fill(normalWarehouse);
+        //ASSERT
+        assertEquals(0, mailer.numberSent());
     }
 
     @Test
