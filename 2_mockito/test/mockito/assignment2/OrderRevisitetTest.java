@@ -6,9 +6,9 @@ import mockito.assignment1.Order;
 import mockito.assignment2.OrderRevisitet;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import java.util.logging.Logger;
+
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.*;
 
@@ -57,7 +57,17 @@ public class OrderRevisitetTest {
      * when filling order is written to log.
      */
     public void runtimeExceptionOnFillIsWrittenToLog() {
-        fail("Not implemented");
+        //ARRANGE
+        Warehouse mockWarehouse = mock(Warehouse.class);
+        when(mockWarehouse.hasInventory(anyString(), anyInt())).thenReturn(true);   //Sier at metode skal returnere true uansett (overskriver metidens retur)
+        OrderRevisitet order = TestDataProvider.getDefaultOrderRevisited();
+        Logger logger = addMockLogger(order);
+        doThrow(new RuntimeException()).when(mockWarehouse).remove(anyString(), anyInt());  //kaster exception når "remove" blir kalt
+        //ACT
+        order.fill(mockWarehouse);
+        //ASSERT/VERIFY
+        assertFalse(order.isFilled());
+        verify(logger).info(anyString());
     }
 
     @Test
@@ -100,5 +110,11 @@ public class OrderRevisitetTest {
         OrderRevisitet orderSpy = spy(order);
         when(orderSpy.returnStringMethod()).thenReturn("something");
         assertTrue(orderSpy.returnStringMethod().equals("something"));
+    }
+
+    private Logger addMockLogger(OrderRevisitet order){
+        Logger logger = mock(Logger.class);
+        order.setLogger(logger);
+        return logger;
     }
 }
