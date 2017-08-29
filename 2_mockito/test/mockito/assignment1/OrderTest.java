@@ -5,14 +5,14 @@ import mockito.Warehouse;
 import mockito.WarehouseImpl;
 import org.junit.Before;
 import org.mockito.Mockito;
+import org.mockito.internal.matchers.Or;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.util.List;
 
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class OrderTest {
 
@@ -98,12 +98,18 @@ public class OrderTest {
      * Also make sure the order status is filled.
      */
     public void warehouseShouldCheckInventoryAndUpdateQuantityWhenNeeded() {
-        Warehouse normalWarehouse = Mockito.mock(Warehouse.class);
-        Order fillableOrder = TestDataProvider.getFillableOrder(normalWarehouse);   // Oppretter en ordre det er kapasitet for å oppfyller i varehuset
-        fillableOrder.fill(normalWarehouse);
+        Warehouse mockWarehouse = mock(Warehouse.class);
+        Order order = TestDataProvider.getDefaultOrder();   // Oppretter en ordre det er kapasitet for å oppfyller i varehuset
 
-        //Mockito.verify(normalWarehouse).hasInventory("Talisker", 50);
-        //Mockito.verify(normalWarehouse).remove("Talisker", 50);
+        // We decide what the mockWarehouse will return using when/thenReturn
+        when(mockWarehouse.hasInventory(order.getProductName(), order.getQuantity())).thenReturn(true);
+        order.fill(mockWarehouse);
+
+        verify(mockWarehouse).hasInventory(order.getProductName(), order.getQuantity());
+        verify(mockWarehouse).remove(order.getProductName(), order.getQuantity());
+        assertTrue(order.isFilled());
+
+
     }
 
     @Test
@@ -116,7 +122,21 @@ public class OrderTest {
      * Also make sure the order status is NOT filled.
      */
     public void warehouseShouldOnlyCheckInventoryWhenFillingIsImpossible() {
-        fail("Not implemented");
+        // ARRANGE
+        Warehouse mockWarehouse = mock(Warehouse.class);
+        Order order = TestDataProvider.getDefaultOrder();
+        // Bestemmer at mockwarehouse skal returnere false ved visse kriterier
+        when(mockWarehouse.hasInventory(order.getProductName(), order.getQuantity())).thenReturn(false);
+        //ACT
+        order.fill(mockWarehouse);
+        //ASSERT/VERIFY
+        assertFalse(order.isFilled());
+        verify(mockWarehouse).hasInventory(order.getProductName(), order.getQuantity());
+        //Verifiser at remove ikke blir kalt
+        verify(mockWarehouse, never()).remove(anyString(), anyInt());
+
+        verifyNoMoreInteractions(mockWarehouse);
+        assertFalse(order.isFilled());
     }
 
     @SuppressWarnings("rawtypes")
